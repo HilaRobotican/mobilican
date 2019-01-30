@@ -1,34 +1,70 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(navigation_goals)
+project(navigation_goal)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
-# add_compile_options(-std=c++11)
+add_compile_options(-std=c++11)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
-find_package(catkin REQUIRED COMPONENTS
-  actionlib
-  move_base_msgs
-  roscpp
-  genmsg 
-  actionlib_msgs
+find_package(
+    catkin REQUIRED COMPONENTS 
+    roscpp
+    actionlib 
+    actionlib_msgs
+    actionlib
+    move_base_msgs
+    genmsg 
 )
 
+find_package(Boost REQUIRED COMPONENTS)
+
+## Add actions
+add_action_files(
+    DIRECTORY action
+    FILES Move.action)
+
+## Generate messages
+generate_messages(DEPENDENCIES actionlib_msgs)
+
+## Define catkin exports
 catkin_package(
-#  INCLUDE_DIRS include
-#  LIBRARIES navigation_goals
-#  CATKIN_DEPENDS actionlib move_base_msgs roscpp
-#  DEPENDS system_lib
+  INCLUDE_DIRS include
+  CATKIN_DEPENDS actionlib_msgs
+  DEPENDS Boost
 )
 
-## Specify additional locations of header files
-## Your package locations should be listed before other locations
+## Setup include dirs
 include_directories(
-# include
-  ${catkin_INCLUDE_DIRS}
+ include
+ ${catkin_INCLUDE_DIRS} ${yaml-cpp_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS}
+ )
+
+
+add_executable(move_server_node
+		src/move_server_node.cpp
+        src/move_action_server.cpp
+        include/move_action_server.h
+		include/point.h)
+
+target_link_libraries(
+	move_server_node
+	${catkin_LIBRARIES}
 )
 
-add_executable(move_base_client src/move_base_client.cpp)
-target_link_libraries(move_base_client ${catkin_LIBRARIES})
-add_dependencies(move_base_client ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+add_dependencies(move_server_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+
+add_executable(move_client_node
+		src/move_client_node.cpp
+		src/move_action_client.cpp
+		include/move_action_client.h)
+
+target_link_libraries(
+	move_client_node
+	${catkin_LIBRARIES}
+)
+
+add_dependencies(move_client_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+
+        
+

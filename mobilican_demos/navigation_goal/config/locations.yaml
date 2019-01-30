@@ -1,0 +1,49 @@
+locations: [
+{
+    location_name: hila,
+    x: -7.19,
+    y: 4.5,
+    Y: 0.0
+},
+
+{
+    location_name: yair,
+    x: -10.2,
+    y: 4.77,
+    Y: 0.0
+},
+
+{
+    location_name: yam,
+    x: -1.15,
+    y: 3.74,
+    Y: 0.0
+},
+
+{
+    location_name: toilet,
+    x: -12.4,
+    y: -3.35,
+    Y: 0.0
+},
+
+{
+    location_name: noy,
+    x: -13.7,
+    y: -4.05,
+    Y: 0.0
+},
+
+{
+location_name: right_corner,
+    x: 0.47
+    y: 5.03
+    Y: 0.00161
+},
+{
+location_name: right_low_corner,
+    x: 0.446
+    y: -0.503
+    Y: 0.00648
+}
+]

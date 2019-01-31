@@ -37,7 +37,7 @@ void MoveActionServer::initMoveBaseClient()
 
 /* Construct an action server. */
 MoveActionServer::MoveActionServer(ros::NodeHandle *nh, std::string name) : //action_server_(nh_, name, boost::bind(&MoveActionServer::executeCB, this, _1), false),
-                                       nh_(nh), action_name_(name)
+                                       nh_(nh), action_name_(name), index_counter_(0)
 {
     initActionServer();
     initMoveBaseClient();
@@ -111,7 +111,8 @@ void MoveActionServer::loadLocations()
     p.Y = static_cast<double>(locations_[i]["Y"]);
 
     // Add the location to the map
-    locations_map_[location_name] = p;
+    locations_map_[location_name] = index_counter_++;
+    points_vec_.push_back(p);
   }
 }
 
@@ -144,16 +145,29 @@ void MoveActionServer::executeCB(const navigation_goal::MoveGoalConstPtr &goal)
           ROS_INFO("%s: Succeeded", action_name_.c_str());
           action_server_->setSucceeded(result_);
 
-          std::map<std::string, point>::iterator it;
-          for (it = locations_map_.begin(); it != locations_map_.end(); ++it)
+          std::vector<point>::iterator it;
+          for (it = points_vec_.begin(); it != points_vec_.end(); ++it)
           {
-              cur_point_ = it->second;
-              std::cout << "sending goal: "
-                        << it->first  // string (key)
-                        << std::endl ;
+              cur_point_ = *it;
+//              std::cout << "sending goal: "
+//                        << cur_point_
+//                        << std::endl ;
+
               // send the goal to move base.
               publishGoal();
           }
+
+//          std::map<std::string, point>::iterator it;
+//          for (it = locations_map_.begin(); it != locations_map_.end(); ++it)
+//          {
+//              cur_point_ = it->second;
+//              std::cout << "sending goal: "
+//                        << it->first  // string (key)
+//                        << std::endl ;
+//
+//              // send the goal to move base.
+//              publishGoal();
+//          }
       } else
           {
           bool location_name_found = locations_map_.find(goal->location_name) != locations_map_.end();
@@ -165,8 +179,8 @@ void MoveActionServer::executeCB(const navigation_goal::MoveGoalConstPtr &goal)
               ros::shutdown();
               exit(EXIT_FAILURE);
           }
-
-          cur_point_ = locations_map_[goal->location_name];
+          int cur_index = locations_map_[goal->location_name];
+          cur_point_ = points_vec_.at((unsigned) cur_index);
           ROS_INFO("x: %f, y: %f, :y %f ", cur_point_.x, cur_point_.y, cur_point_.Y);
 
           feedback_.name = "found";

@@ -2,20 +2,21 @@ locations: [
 {
     location_name: right_corner,
     x: 0.47,
-    y: 5.03,
+    y: 3.74,
     Y: 0.00161
-},
-{
-location_name: right_low_corner,
-    x: 0.446,
-    y: -0.503,
-    Y: 0.00648
 },
 {
 location_name: middle,
     x: -2.02,
     y: 1.44,
     Y: 0.0074
+},
+{
+location_name: right_low_corner,
+    x: 0.446,
+    y: -0.503,
+    Y: 0.00648
+
 },
 {
 location_name: out,

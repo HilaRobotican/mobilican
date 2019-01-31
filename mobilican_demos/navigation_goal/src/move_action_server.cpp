@@ -34,7 +34,6 @@ void MoveActionServer::initMoveBaseClient()
     }
 }
 
-
 /* Construct an action server. */
 MoveActionServer::MoveActionServer(ros::NodeHandle *nh, std::string name) : //action_server_(nh_, name, boost::bind(&MoveActionServer::executeCB, this, _1), false),
                                        nh_(nh), action_name_(name), index_counter_(0)
@@ -149,25 +148,16 @@ void MoveActionServer::executeCB(const navigation_goal::MoveGoalConstPtr &goal)
           for (it = points_vec_.begin(); it != points_vec_.end(); ++it)
           {
               cur_point_ = *it;
-//              std::cout << "sending goal: "
-//                        << cur_point_
-//                        << std::endl ;
+              std::cout << "sending goal: "
+                        << std::endl ;
 
               // send the goal to move base.
               publishGoal();
-          }
 
-//          std::map<std::string, point>::iterator it;
-//          for (it = locations_map_.begin(); it != locations_map_.end(); ++it)
-//          {
-//              cur_point_ = it->second;
-//              std::cout << "sending goal: "
-//                        << it->first  // string (key)
-//                        << std::endl ;
-//
-//              // send the goal to move base.
-//              publishGoal();
-//          }
+              ROS_INFO("waiting in place for 10 sec.");
+              ros::Duration(10).sleep();
+              ROS_INFO("finish waiting");
+          }
       } else
           {
           bool location_name_found = locations_map_.find(goal->location_name) != locations_map_.end();
@@ -189,9 +179,6 @@ void MoveActionServer::executeCB(const navigation_goal::MoveGoalConstPtr &goal)
           result_.res = goal->location_name;
           ROS_INFO("%s: Succeeded", action_name_.c_str());
           action_server_->setSucceeded(result_);
-
-          // this sleep is not necessary, the sequence is computed at 1 Hz for demonstration purposes
-          r.sleep(); //TODO
 
           // send the goal to move base.
           publishGoal();
@@ -229,20 +216,16 @@ void MoveActionServer::publishGoal()
 {
     createGoalToMoveBase(); // create the goal massage
     ROS_INFO("Sending goal: x = %f, y = %f, Y = %f", cur_point_.x, cur_point_.y, cur_point_.Y);
-    move_base_client_->sendGoal(goal_);
+    move_base_client_->sendGoal(goal_); //  push the goal out over the wire to the move_base node for processing.
 
     // Wait for the action to return
     move_base_client_->waitForResult();
 
     if (move_base_client_->getState() == actionlib::SimpleClientGoalState::SUCCEEDED)
     {
-        ROS_INFO("You have reached the goal!");
-//        // If there are more goals, publish them.
-//        if ()
-//        {
-//            publishGoal();
-//        }
-    } else
+        ROS_INFO("You have reached the goal!");  // according to move_base.
+    }
+    else
     {
         ROS_INFO("The base failed for some reason");
     }

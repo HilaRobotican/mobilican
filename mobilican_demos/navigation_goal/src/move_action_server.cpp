@@ -9,7 +9,7 @@
 void MoveActionServer::initActionServer()
 {
     action_server_ = new actionlib::SimpleActionServer<navigation_goal::MoveAction>(*nh_, action_name_,
-                                                                              boost::bind(&MoveActionServer::executeCB, this, _1), false);
+                        boost::bind(&MoveActionServer::executeCB, this, _1), false);
     action_server_->start();
 
     // load the locations yaml file
@@ -27,7 +27,7 @@ void MoveActionServer::initMoveBaseClient()
     // true causes the client to spin its own thread
     move_base_client_ = new MoveBaseClient("move_base", true);
 
-    //wait for the action server to come up
+    //wait for the action server ("move_base") to come up
     while(!move_base_client_->waitForServer())
     {
         ROS_INFO("Waiting for the move_base action server to come up");
@@ -133,33 +133,55 @@ void MoveActionServer::executeCB(const navigation_goal::MoveGoalConstPtr &goal)
     success = false;
   }
 
-  // Check if the client's goal exists. If not, exit.
-  bool location_name_found = locations_map_.find(goal->location_name) != locations_map_.end();
-  if (!location_name_found)
-  {
-    ROS_ERROR( "[MoveActionServer]: couldn't locate model specification for location name %s. "
-               "Make sure locations.yaml contains all the necessary locations. shutting down...",
-               goal->location_name.c_str());
-    ros::shutdown();
-    exit(EXIT_FAILURE);
-  }
-
-  feedback_.name = "found";
-  p_ = locations_map_[goal->location_name];
-  ROS_INFO("x: %f, y: %f, :y %f ", p_.x, p_.y, p_.Y);
-
-  action_server_->publishFeedback(feedback_); // publish the feedback
-  // this sleep is not necessary, the sequence is computed at 1 Hz for demonstration purposes
-  r.sleep();
-
   if (success)
   {
-    result_.res = goal->location_name;
-    ROS_INFO("%s: Succeeded", action_name_.c_str());
-    action_server_->setSucceeded(result_);
+      if (goal->location_name == "all")
+      {
+          feedback_.name = "execute all";
+          action_server_->publishFeedback(feedback_); // publish the feedback
 
-    // send the goal to move base.
-    publishGoal();
+          result_.res = goal->location_name;
+          ROS_INFO("%s: Succeeded", action_name_.c_str());
+          action_server_->setSucceeded(result_);
+
+          std::map<std::string, point>::iterator it;
+          for (it = locations_map_.begin(); it != locations_map_.end(); ++it)
+          {
+              cur_point_ = it->second;
+              std::cout << "sending goal: "
+                        << it->first  // string (key)
+                        << std::endl ;
+              // send the goal to move base.
+              publishGoal();
+          }
+      } else
+          {
+          bool location_name_found = locations_map_.find(goal->location_name) != locations_map_.end();
+          if (!location_name_found) // Check if the client's goal exists. If not, exit.
+          {
+              ROS_ERROR("[MoveActionServer]: couldn't locate model specification for location name %s. "
+                        "Make sure locations.yaml contains all the necessary locations. shutting down...",
+                        goal->location_name.c_str());
+              ros::shutdown();
+              exit(EXIT_FAILURE);
+          }
+
+          cur_point_ = locations_map_[goal->location_name];
+          ROS_INFO("x: %f, y: %f, :y %f ", cur_point_.x, cur_point_.y, cur_point_.Y);
+
+          feedback_.name = "found";
+          action_server_->publishFeedback(feedback_); // publish the feedback
+
+          result_.res = goal->location_name;
+          ROS_INFO("%s: Succeeded", action_name_.c_str());
+          action_server_->setSucceeded(result_);
+
+          // this sleep is not necessary, the sequence is computed at 1 Hz for demonstration purposes
+          r.sleep(); //TODO
+
+          // send the goal to move base.
+          publishGoal();
+      }
   }
 }
 
@@ -172,12 +194,12 @@ void MoveActionServer::createGoalToMoveBase()
     goal_.target_pose.header.stamp = ros::Time::now();
 
     // z will be 0 by default.
-    goal_.target_pose.pose.position.x = p_.x;
-    goal_.target_pose.pose.position.y = p_.y;
+    goal_.target_pose.pose.position.x = cur_point_.x;
+    goal_.target_pose.pose.position.y = cur_point_.y;
     //  goal.target_pose.pose.orientation.w = 1.0;
 
     // Convert the Euler angle to quaternion
-    double radians_ = p_.Y * (M_PI / 180);
+    double radians_ = cur_point_.Y * (M_PI / 180);
     tf::Quaternion quaternion;
     quaternion = tf::createQuaternionFromYaw(radians_); // Create this quaternion from yaw (in radians)
     ROS_INFO_STREAM(quaternion);
@@ -191,8 +213,8 @@ void MoveActionServer::createGoalToMoveBase()
 /* Send a goal to the robot to move to a specific location */
 void MoveActionServer::publishGoal()
 {
-    createGoalToMoveBase();
-    ROS_INFO("Sending goal: x = %f, y = %f, Y = %f", p_.x, p_.y, p_.Y);
+    createGoalToMoveBase(); // create the goal massage
+    ROS_INFO("Sending goal: x = %f, y = %f, Y = %f", cur_point_.x, cur_point_.y, cur_point_.Y);
     move_base_client_->sendGoal(goal_);
 
     // Wait for the action to return
@@ -201,6 +223,11 @@ void MoveActionServer::publishGoal()
     if (move_base_client_->getState() == actionlib::SimpleClientGoalState::SUCCEEDED)
     {
         ROS_INFO("You have reached the goal!");
+//        // If there are more goals, publish them.
+//        if ()
+//        {
+//            publishGoal();
+//        }
     } else
     {
         ROS_INFO("The base failed for some reason");

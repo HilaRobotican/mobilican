@@ -45,7 +45,7 @@ private:
   // variables for the yaml file parsing
   XmlRpc::XmlRpcValue locations_; // the name of the yaml file
   std::map<std::string, point> locations_map_;
-  point p_;  // represents the desired location
+  point cur_point_;  // represents the desired location
 
   move_base_msgs::MoveBaseGoal goal_; // goal to move base
 

@@ -1,6 +1,6 @@
 #include "move_action_server.h"
 
-// usage: roslaunch my_action my_action.launch location_name:=___
+// usage: roslaunch navigation_goal navigation_goal.launch location_name:=___
 //usage:
 // roslaunch mobilican komodo_2.launch gazebo:=true lidar:=true move_base:=true amcl:=true world_name:="/home/hila/catkin_ws/src/mobilican/mobilican_gazebo/worlds/rooms.world" have_map:=true map:="/home/hila/catkin_ws/src/mobilican/mobilican_navigation/maps/rooms.yaml"
 //rviz

@@ -1,9 +1,10 @@
 #include "move_action_server.h"
 
 //usage:
-// roslaunch mobilican komodo_2.launch gazebo:=true lidar:=true move_base:=true amcl:=true world_name:="/home/hila/catkin_ws/src/mobilican/mobilican_gazebo/worlds/rooms.world" have_map:=true map:="/home/hila/catkin_ws/src/mobilican/mobilican_navigation/maps/rooms.yaml"
+// roslaunch mobilican mobilican.launch gazebo:=true lidar:=true move_base:=true amcl:=true world:="/home/hila/catkin_ws/src/mobilican/mobilican_gazebo/worlds/rooms.world" have_map:=true map:="/home/hila/catkin_ws/src/mobilican/mobilican_navigation/maps/rooms.yaml" rgb_cam:=true
 // rviz
 // roslaunch navigation_goal navigation_goal.launch location_name:=___
+
 #define WAITING_TIME_BETWEEN_GOALS 5
 
 void MoveActionServer::initActionServer()
@@ -33,6 +34,8 @@ void MoveActionServer::initMoveBaseClient()
         ROS_INFO("Waiting for the move_base action server to come up");
     }
 }
+
+//image_snapshot_client_ = nh_.serviceClient<navigation_goal::ImageSnapshot>("image_snapshot");
 
 /* Construct an action server. */
 MoveActionServer::MoveActionServer(ros::NodeHandle *nh, std::string name) : //action_server_(nh_, name, boost::bind(&MoveActionServer::executeCB, this, _1), false),

@@ -19,7 +19,10 @@ typedef actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction> MoveBaseCl
 /* 
  * Represents an action server that receives a name of a location from the action client,
  * and searches for its x, y, and Y coordinates (after loading this information from a Yaml file). 
- * If the location exists, sends it as a goal to move_base node (which is an action server). 
+ * If the location exists, sends it as a goal to move_base node (which is an action server).
+ * Therefore it is also a client of move_base.
+ * Moreover, it is also a client of image_snapshot_node, meaning that each time that the robot reaches
+ * to its goal, it takes snapshot of the cameras.
  */
 class MoveActionServer
 {
@@ -36,7 +39,11 @@ private:
   // The feedback and result messages are created for publishing in the action.
   ros::NodeHandle *nh_;
   actionlib::SimpleActionServer<navigation_goal::MoveAction> * action_server_;
+
   MoveBaseClient * move_base_client_;
+
+  ros::ServiceClient * image_snapshot_node_;
+
   std::string action_name_;
 
   navigation_goal::MoveFeedback feedback_;

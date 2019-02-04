@@ -2,23 +2,23 @@
 from __future__ import print_function
 
 import roslib
-roslib.load_manifest('image_snapshot')
+roslib.load_manifest('navigation_goal') # image_snapshot?
 import sys
 import rospy
 import cv2
 from std_msgs.msg import String
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge, CvBridgeError
-from image_snapshot.srv import *
+from navigation_goal.srv import *
 
 #usage for trx:
 # roslaunch mobilican trx.launch gazebo:=true cams:=true world:="/home/hila/catkin_ws/src/mobilican/mobilican_gazebo/worlds/simplified_market.world"
 # rosrun rqt_image_view rqt_image_view
 # rosrun rqt_robot_steering rqt_robot_steering
-# rosrun image_snapshot image_snapshot_node.py
+# rosrun navigation_goal image_snapshot_node.py
 # rosservice call /image_snapshot_server // call the server from the command line
 
-IMAGES_DIRECTORY = '/home/hila/catkin_ws/src/mobilican/mobilican_demos/image_snapshot/images/'
+IMAGES_DIRECTORY = '/home/hila/catkin_ws/src/mobilican/mobilican_demos/navigation_goal/images/'
 IMAGE_FORMAT = '.png'
 NUMBER_OF_CAMERAS = 3
 cameras = ["bottom", "middle", "top"]

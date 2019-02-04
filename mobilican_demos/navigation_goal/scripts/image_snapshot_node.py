@@ -20,9 +20,12 @@ from navigation_goal.srv import *
 
 IMAGES_DIRECTORY = '/home/hila/catkin_ws/src/mobilican/mobilican_demos/navigation_goal/images/'
 IMAGE_FORMAT = '.png'
-NUMBER_OF_CAMERAS = 3
-cameras = ["bottom", "middle", "top"]
-topics = ["/bottom_cam/image_raw", "/middle_cam/image_raw", "/top_cam/image_raw"]
+# NUMBER_OF_CAMERAS = 3
+NUMBER_OF_CAMERAS = 1
+# cameras = ["bottom", "middle", "top"]
+cameras = ["kinect2"]
+topics = ["/kinect2/qhd/image_color_rect"]
+# topics = ["/bottom_cam/image_raw", "/middle_cam/image_raw", "/top_cam/image_raw"]
 
 class image_snapshot_node:
   # A node that uses CvBridge to convert ROS images (sensor_msgs/Image) into OpenCV cv::Mat format.
@@ -69,7 +72,7 @@ class image_snapshot_node:
 
   def update_image_callback(self, data, camera_index):
     self.last_topic_time[camera_index] = True
-    # print("first image callback")
+    # print("IN image callback!!!")
 
     try:
       # Converting an image message pointer to an OpenCV message:

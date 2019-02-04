@@ -9,6 +9,7 @@
 #include <move_base_msgs/MoveBaseAction.h>
 #include <tf/transform_datatypes.h>
 #include "navigation_goal/MoveAction.h" // This is a header generated automatically from the FibonacciAction.msg file.
+#include "navigation_goal/ImageSnapshot.h" // This is a header generated automatically from the FibonacciAction.msg file.
 #include "point.h"
 
 
@@ -42,7 +43,7 @@ private:
 
   MoveBaseClient * move_base_client_;
 
-  ros::ServiceClient * image_snapshot_node_;
+  ros::ServiceClient image_snapshot_client_;
 
   std::string action_name_;
 
@@ -80,6 +81,12 @@ private:
 
   /* Send a goal to the robot to move to a specific location */
   void publishGoal();
+
+  /* Validate that the robot stopped.*/
+  bool validate_stop();
+
+  /* Called when the image_snapshot client send a request to image_snapshot_node. */
+  void call_image_snapshot();
 
 };
 #endif // NAVIGATION_GOAL_MOVE_ACTION_SERVER_H

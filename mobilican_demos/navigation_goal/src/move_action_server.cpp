@@ -35,7 +35,6 @@ void MoveActionServer::initMoveBaseClient()
     }
 }
 
-//image_snapshot_client_ = nh_.serviceClient<navigation_goal::ImageSnapshot>("image_snapshot");
 
 /* Construct an action server. */
 MoveActionServer::MoveActionServer(ros::NodeHandle *nh, std::string name) : //action_server_(nh_, name, boost::bind(&MoveActionServer::executeCB, this, _1), false),
@@ -43,6 +42,7 @@ MoveActionServer::MoveActionServer(ros::NodeHandle *nh, std::string name) : //ac
 {
     initActionServer();
     initMoveBaseClient();
+    image_snapshot_client_ = nh_->serviceClient<navigation_goal::ImageSnapshot>("/image_snapshot_server");
 }
 
 MoveActionServer::~MoveActionServer(){
@@ -118,6 +118,31 @@ void MoveActionServer::loadLocations()
   }
 }
 
+/* Validate that the robot stopped.*/
+bool MoveActionServer::validate_stop() //TODO
+{
+    return true;
+}
+
+/* Called when the image_snapshot client send a request to image_snapshot_node. */
+void MoveActionServer::call_image_snapshot()
+{
+    // Since service calls are blocking, it will return once the call is done.
+    // If the service call succeeded, call() will return true and the value in srv.response will be valid.
+    // If the call did not succeed, call() will return false and the value in srv.response will be invalid.
+    navigation_goal::ImageSnapshot srv;
+    if (image_snapshot_client_.call(srv))
+    {
+        ROS_INFO("Finished sending the snapshot request: %s", srv.response.res.c_str());
+    }
+    else
+        {
+        ROS_ERROR("Failed to call service image_snapshot_node. ");
+        ros::shutdown();
+        exit(EXIT_FAILURE);
+        }
+}
+
 /*
  * The callback function. Called when the client send a goal.
  */
@@ -158,6 +183,15 @@ void MoveActionServer::executeCB(const navigation_goal::MoveGoalConstPtr &goal)
 
               ROS_INFO("waiting in place for %d sec.", WAITING_TIME_BETWEEN_GOALS);
               ros::Duration(WAITING_TIME_BETWEEN_GOALS).sleep();
+              if (validate_stop())
+              {
+                  call_image_snapshot();
+              } else
+              {
+                  ROS_ERROR("The robot should have stopped.");
+                  ros::shutdown();
+                  exit(EXIT_FAILURE);
+              }
               ROS_INFO("finish waiting");
           }
       } else
@@ -213,7 +247,7 @@ void MoveActionServer::createGoalToMoveBase()
     goal_.target_pose.pose.orientation = quaternion_msg_;
 }
 
-/* Send a goal to the robot to move to a specific location */
+/* move_base client send a goal to the robot to move to a specific location */
 void MoveActionServer::publishGoal()
 {
     createGoalToMoveBase(); // create the goal massage

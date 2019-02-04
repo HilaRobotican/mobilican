@@ -1,10 +1,10 @@
 #include "move_action_server.h"
 
-// usage: roslaunch navigation_goal navigation_goal.launch location_name:=___
 //usage:
 // roslaunch mobilican komodo_2.launch gazebo:=true lidar:=true move_base:=true amcl:=true world_name:="/home/hila/catkin_ws/src/mobilican/mobilican_gazebo/worlds/rooms.world" have_map:=true map:="/home/hila/catkin_ws/src/mobilican/mobilican_navigation/maps/rooms.yaml"
-//rviz
-
+// rviz
+// roslaunch navigation_goal navigation_goal.launch location_name:=___
+#define WAITING_TIME_BETWEEN_GOALS 5
 
 void MoveActionServer::initActionServer()
 {
@@ -124,7 +124,7 @@ void MoveActionServer::executeCB(const navigation_goal::MoveGoalConstPtr &goal)
   bool success = true;
 
   // Publish info to the console for the user
-  std::cout << "Executing, the loaction name is: " << goal->location_name << std::endl;
+  std::cout << "Executing, the location name is: " << goal->location_name << std::endl;
 
   if (action_server_->isPreemptRequested() || !ros::ok())
   {
@@ -150,12 +150,11 @@ void MoveActionServer::executeCB(const navigation_goal::MoveGoalConstPtr &goal)
               cur_point_ = *it;
               std::cout << "sending goal: "
                         << std::endl ;
-
               // send the goal to move base.
               publishGoal();
 
-              ROS_INFO("waiting in place for 10 sec.");
-              ros::Duration(10).sleep();
+              ROS_INFO("waiting in place for %d sec.", WAITING_TIME_BETWEEN_GOALS);
+              ros::Duration(WAITING_TIME_BETWEEN_GOALS).sleep();
               ROS_INFO("finish waiting");
           }
       } else
@@ -228,5 +227,6 @@ void MoveActionServer::publishGoal()
     else
     {
         ROS_INFO("The base failed for some reason");
+        //TODO - exit?
     }
 }

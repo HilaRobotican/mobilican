@@ -10,14 +10,26 @@ add_compile_options(-std=c++11)
 find_package(
     catkin REQUIRED COMPONENTS 
     roscpp
+    rospy
     actionlib 
     actionlib_msgs
     actionlib
     move_base_msgs
     genmsg 
+    sensor_msgs
+    std_msgs
+    message_generation
 )
 
 find_package(Boost REQUIRED COMPONENTS)
+
+find_package(OpenCV) 
+
+# Generate services in the 'srv' folder
+add_service_files(
+   FILES
+   ImageSnapshot.srv
+)
 
 ## Add actions
 add_action_files(
@@ -25,12 +37,12 @@ add_action_files(
     FILES Move.action)
 
 ## Generate messages
-generate_messages(DEPENDENCIES actionlib_msgs)
+generate_messages(DEPENDENCIES actionlib_msgs std_msgs)
 
 ## Define catkin exports
 catkin_package(
   INCLUDE_DIRS include
-  CATKIN_DEPENDS actionlib_msgs
+  CATKIN_DEPENDS actionlib_msgs cv_bridge opencv2 roscpp rospy sensor_msgs std_msgs message_runtime
   DEPENDS Boost
 )
 

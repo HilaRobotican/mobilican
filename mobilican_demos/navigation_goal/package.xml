@@ -55,6 +55,10 @@
   <build_depend>std_msgs</build_depend>
   <build_depend>yaml-cpp</build_depend>
   <build_depend>move_base_msgs</build_depend>
+  <build_depend>cv_bridge</build_depend>
+  <build_depend>opencv2</build_depend>
+  <build_depend>rospy</build_depend>
+  <build_depend>sensor_msgs</build_depend>
 
   <build_export_depend>actionlib</build_export_depend>
   <build_export_depend>actionlib_msgs</build_export_depend>
@@ -62,6 +66,10 @@
   <build_export_depend>std_msgs</build_export_depend>
   <build_export_depend>yaml-cpp</build_export_depend>
   <build_export_depend>move_base_msgs</build_export_depend>
+  <build_export_depend>cv_bridge</build_export_depend>
+  <build_export_depend>opencv2</build_export_depend>
+  <build_export_depend>rospy</build_export_depend>
+  <build_export_depend>sensor_msgs</build_export_depend>
 
   <exec_depend>actionlib</exec_depend>
   <exec_depend>actionlib_msgs</exec_depend>
@@ -70,6 +78,12 @@
   <exec_depend>message_generation</exec_depend>
   <exec_depend>yaml-cpp</exec_depend>
   <exec_depend>move_base_msgs</exec_depend>
+  <exec_depend>cv_bridge</exec_depend>
+  <exec_depend>opencv2</exec_depend>
+  <exec_depend>rospy</exec_depend>
+  <exec_depend>sensor_msgs</exec_depend>
+  <exec_depend>std_msgs</exec_depend>
+  <exec_depend>message_runtime</exec_depend>
 
   <!-- The export tag contains other, unspecified, tags -->
   <export>

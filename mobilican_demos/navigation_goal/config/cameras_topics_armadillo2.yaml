@@ -1,0 +1,2 @@
+cameras_topics:
+ - /kinect2/qhd/image_color_rect

@@ -83,10 +83,10 @@ private:
   void publishGoal();
 
   /* Validate that the robot stopped.*/
-  bool validate_stop();
+  bool validateStop();
 
   /* Called when the image_snapshot client send a request to image_snapshot_node. */
-  void call_image_snapshot();
+  void callImageSnapshot();
 
 };
 #endif // NAVIGATION_GOAL_MOVE_ACTION_SERVER_H

@@ -1,0 +1,4 @@
+cameras_topics:
+ - /bottom_cam/image_raw
+ - /middle_cam/image_raw
+ - /top_cam/image_raw

@@ -119,13 +119,13 @@ void MoveActionServer::loadLocations()
 }
 
 /* Validate that the robot stopped.*/
-bool MoveActionServer::validate_stop() //TODO
+bool MoveActionServer::validateStop() //TODO
 {
     return true;
 }
 
 /* Called when the image_snapshot client send a request to image_snapshot_node. */
-void MoveActionServer::call_image_snapshot()
+void MoveActionServer::callImageSnapshot()
 {
     // Since service calls are blocking, it will return once the call is done.
     // If the service call succeeded, call() will return true and the value in srv.response will be valid.
@@ -169,7 +169,7 @@ void MoveActionServer::executeCB(const navigation_goal::MoveGoalConstPtr &goal)
           action_server_->publishFeedback(feedback_); // publish the feedback
 
           result_.res = goal->location_name;
-          ROS_INFO("%s: Succeeded", action_name_.c_str());
+          ROS_INFO("%s: Succeeded: The goals sent", action_name_.c_str());
           action_server_->setSucceeded(result_);
 
           std::vector<point>::iterator it;
@@ -183,9 +183,9 @@ void MoveActionServer::executeCB(const navigation_goal::MoveGoalConstPtr &goal)
 
               ROS_INFO("waiting in place for %d sec.", WAITING_TIME_BETWEEN_GOALS);
               ros::Duration(WAITING_TIME_BETWEEN_GOALS).sleep();
-              if (validate_stop())
+              if (validateStop())
               {
-                  call_image_snapshot();
+                  callImageSnapshot();
               } else
               {
                   ROS_ERROR("The robot should have stopped.");
@@ -218,6 +218,7 @@ void MoveActionServer::executeCB(const navigation_goal::MoveGoalConstPtr &goal)
 
           // send the goal to move base.
           publishGoal();
+          //TODO
       }
   }
 }

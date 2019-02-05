@@ -35,6 +35,12 @@ void MoveActionServer::initMoveBaseClient()
     }
 }
 
+void MoveActionServer::initOdomSubscriber()
+{
+    odom_subscriber_ = nh_->subscribe("/mobile_base_controller/odom", 1000, &MoveActionServer::odomCallback, this);
+    cur_linear_vel_ = 0.0;
+    cur_angular_vel_ = 0.0;
+}
 
 /* Construct an action server. */
 MoveActionServer::MoveActionServer(ros::NodeHandle *nh, std::string name) : //action_server_(nh_, name, boost::bind(&MoveActionServer::executeCB, this, _1), false),
@@ -42,12 +48,21 @@ MoveActionServer::MoveActionServer(ros::NodeHandle *nh, std::string name) : //ac
 {
     initActionServer();
     initMoveBaseClient();
+    initOdomSubscriber();
     image_snapshot_client_ = nh_->serviceClient<navigation_goal::ImageSnapshot>("/image_snapshot_server");
 }
 
 MoveActionServer::~MoveActionServer(){
   delete action_server_;
   delete move_base_client_;
+}
+
+// Called whenever a new message arrives from the odom topic.
+void MoveActionServer::odomCallback(const nav_msgs::Odometry::ConstPtr& msg)
+{
+    cur_linear_vel_ = msg->twist.twist.linear.x;
+    cur_angular_vel_ = msg->twist.twist.angular.z;
+//    ROS_INFO("Vel-> Linear: [%f], Angular: [%f]", msg->twist.twist.linear.x, msg->twist.twist.angular.z);
 }
 
 // Check if the yaml file is valid. If not, exit.
@@ -119,9 +134,9 @@ void MoveActionServer::loadLocations()
 }
 
 /* Validate that the robot stopped.*/
-bool MoveActionServer::validateStop() //TODO
+bool MoveActionServer::validateStop()
 {
-    return true;
+    return (std::abs(cur_angular_vel_) < 0.01) && (std::abs(cur_linear_vel_) < 0.01);
 }
 
 /* Called when the image_snapshot client send a request to image_snapshot_node. */
@@ -141,6 +156,42 @@ void MoveActionServer::callImageSnapshot()
         ros::shutdown();
         exit(EXIT_FAILURE);
         }
+}
+
+void MoveActionServer::executeAllGoals(const navigation_goal::MoveGoalConstPtr &goal)
+{
+    feedback_.name = "execute all";
+    action_server_->publishFeedback(feedback_); // publish the feedback
+
+    result_.res = goal->location_name;
+    ROS_INFO("%s: Succeeded: The goals sent", action_name_.c_str());
+    action_server_->setSucceeded(result_);
+
+    std::vector<point>::iterator it;
+    for (it = points_vec_.begin(); it != points_vec_.end(); ++it) {
+        cur_point_ = *it;
+        std::cout << "sending goal: "
+                  << std::endl;
+        publishGoal();  // send the goal to move base.
+
+        ROS_INFO("waiting in place for %d sec.", WAITING_TIME_BETWEEN_GOALS);
+        ros::Duration(WAITING_TIME_BETWEEN_GOALS).sleep();
+        int counter = 0;
+
+        while (!validateStop()) {
+            ROS_INFO("waiting for absolute stop");
+            ROS_INFO("Vel-> Linear: [%f], Angular: [%f]", cur_linear_vel_, cur_angular_vel_);
+            ros::Duration(1).sleep();
+            ++counter;
+
+            if (counter > 10) {
+                ROS_ERROR("[move_action_server] The robot should have stopped.");
+                ros::shutdown();
+                exit(EXIT_FAILURE);
+            }
+        }
+        callImageSnapshot();
+    }
 }
 
 /*
@@ -165,37 +216,11 @@ void MoveActionServer::executeCB(const navigation_goal::MoveGoalConstPtr &goal)
   {
       if (goal->location_name == "all")
       {
-          feedback_.name = "execute all";
-          action_server_->publishFeedback(feedback_); // publish the feedback
-
-          result_.res = goal->location_name;
-          ROS_INFO("%s: Succeeded: The goals sent", action_name_.c_str());
-          action_server_->setSucceeded(result_);
-
-          std::vector<point>::iterator it;
-          for (it = points_vec_.begin(); it != points_vec_.end(); ++it)
+          executeAllGoals(goal);
+      }
+      else
           {
-              cur_point_ = *it;
-              std::cout << "sending goal: "
-                        << std::endl ;
-              // send the goal to move base.
-              publishGoal();
-
-              ROS_INFO("waiting in place for %d sec.", WAITING_TIME_BETWEEN_GOALS);
-              ros::Duration(WAITING_TIME_BETWEEN_GOALS).sleep();
-              if (validateStop())
-              {
-                  callImageSnapshot();
-              } else
-              {
-                  ROS_ERROR("The robot should have stopped.");
-                  ros::shutdown();
-                  exit(EXIT_FAILURE);
-              }
-              ROS_INFO("finish waiting");
-          }
-      } else
-          {
+          // todo - repetition of code with executeAllGoals?
           bool location_name_found = locations_map_.find(goal->location_name) != locations_map_.end();
           if (!location_name_found) // Check if the client's goal exists. If not, exit.
           {

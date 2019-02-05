@@ -10,6 +10,7 @@
 #include <tf/transform_datatypes.h>
 #include "navigation_goal/MoveAction.h" // This is a header generated automatically from the FibonacciAction.msg file.
 #include "navigation_goal/ImageSnapshot.h" // This is a header generated automatically from the FibonacciAction.msg file.
+#include "nav_msgs/Odometry.h"
 #include "point.h"
 
 
@@ -45,7 +46,14 @@ private:
 
   ros::ServiceClient image_snapshot_client_;
 
+  // subscriber to odom topic.
+  ros::Subscriber odom_subscriber_;
+
   std::string action_name_;
+
+
+  double cur_linear_vel_;
+  double cur_angular_vel_;
 
   navigation_goal::MoveFeedback feedback_;
   navigation_goal::MoveResult result_;
@@ -56,13 +64,16 @@ private:
   std::map<std::string, int> locations_map_; // map a location name to its index in the vector.
   std::vector<point> points_vec_;
   point cur_point_;  // represents the desired location
-  int index_counter_; // counts the elements in the yaml file. TODO - GOOD?
+  int index_counter_; // counts the elements in the yaml file.
   move_base_msgs::MoveBaseGoal goal_; // goal to move base
 
   void initActionServer();
 
   /* Initialize the move_base client. */
   void initMoveBaseClient();
+
+  // Called whenever a new message arrives from the odom topic.
+  void initOdomSubscriber();
 
   // Check if the yaml file is valid. If not, exit.
   bool validateYamlType(XmlRpc::XmlRpcValue::Type actual_type, XmlRpc::XmlRpcValue::Type wanted_type);
@@ -87,6 +98,10 @@ private:
 
   /* Called when the image_snapshot client send a request to image_snapshot_node. */
   void callImageSnapshot();
+
+  void odomCallback(const nav_msgs::Odometry::ConstPtr& msg);
+
+  void executeAllGoals(const navigation_goal::MoveGoalConstPtr &goal);
 
 };
 #endif // NAVIGATION_GOAL_MOVE_ACTION_SERVER_H

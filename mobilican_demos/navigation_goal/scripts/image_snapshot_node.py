@@ -58,11 +58,12 @@ class image_snapshot_node:
     print("Ready to save images.")
 
   def load_yaml(self):
-      try:
-        paramlist = rosparam.load_file(TOPICS_CONFIG_PATH)
-        self.topic_list = paramlist[0][0]["cameras_topics"]
-      except RosParamException as exc:  # unable to load contents of filename
-        print(exc)
+    # The yaml file contains the topics of the robot's cameras.
+    try:
+      paramlist = rosparam.load_file(TOPICS_CONFIG_PATH)
+      self.topic_list = paramlist[0][0]["cameras_topics"]
+    except RosParamException as exc:  # unable to load contents of filename
+      print(exc)
 
   def on_timer(self, event):
     # Validate that each one of the camera's topics is updating each second.

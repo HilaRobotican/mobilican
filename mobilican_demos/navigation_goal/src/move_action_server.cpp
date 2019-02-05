@@ -1,7 +1,7 @@
 #include "move_action_server.h"
 
 //usage:
-// roslaunch mobilican mobilican.launch gazebo:=true lidar:=true move_base:=true amcl:=true world:="/home/hila/catkin_ws/src/mobilican/mobilican_gazebo/worlds/rooms.world" have_map:=true map:="/home/hila/catkin_ws/src/mobilican/mobilican_navigation/maps/rooms.yaml" rgb_cam:=true
+// roslaunch mobilican mobilican.launch robot:=armadillo2 gazebo:=true lidar:=true move_base:=true amcl:=true world:="/home/hila/catkin_ws/src/mobilican/mobilican_gazebo/worlds/rooms.world" have_map:=true map:="/home/hila/catkin_ws/src/mobilican/mobilican_navigation/maps/rooms.yaml" rgb_cam:=true
 // rviz
 // roslaunch navigation_goal navigation_goal.launch location_name:=___
 
@@ -137,7 +137,7 @@ void MoveActionServer::call_image_snapshot()
     }
     else
         {
-        ROS_ERROR("Failed to call service image_snapshot_node. ");
+        ROS_ERROR("[MoveActionServer]: failed to call service image_snapshot_node. ");
         ros::shutdown();
         exit(EXIT_FAILURE);
         }

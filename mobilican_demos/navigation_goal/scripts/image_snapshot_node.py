@@ -12,9 +12,8 @@ import os
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge, CvBridgeError
 from navigation_goal.srv import *
-
+import subprocess
 #usage for trx:
-# roslaunch mobilican trx.launch gazebo:=true cams:=true world:="/home/hila/catkin_ws/src/mobilican/mobilican_gazebo/worlds/simplified_market.world"
 # rosrun rqt_image_view rqt_image_view
 # rosrun rqt_robot_steering rqt_robot_steering
 
@@ -24,7 +23,8 @@ from navigation_goal.srv import *
 TOPICS_CONFIG_NAME = 'cameras_topics_trx.yaml'
 #TOPICS_CONFIG_NAME = 'cameras_topics_armadillo2.yaml'
 TOPICS_CONFIG_PATH = os.path.join(os.path.dirname(sys.argv[0]), '../config/' + TOPICS_CONFIG_NAME)
-IMAGES_DIRECTORY = os.path.join(os.path.dirname(sys.argv[0]), '../images/')  #/var/traxdata/queue
+HOME_DIRECTORY = os.environ['HOME']
+IMAGES_DIRECTORY = os.path.join(HOME_DIRECTORY,"queue/")
 #IMAGES_DIRECTORY = os.path.join(os.path.dirname(sys.argv[0]), '../images/')
 IMAGE_FORMAT = '.jpg'
 
@@ -34,6 +34,13 @@ class image_snapshot_node:
   # and holds the current frame from each camera. Upon a client request, it saves the images into files.
 
   def __init__(self):
+    #subprocess.call(["chmod", "a-w", IMAGES_DIRECTORY])
+    #print("Home dir detected: ".format(HOME_DIRECTORY))
+    #print("Creating IMAGES_DIRECTORY in: ".format(IMAGES_DIRECTORY))
+    if not os.path.exists(IMAGES_DIRECTORY):
+        os.mkdir(IMAGES_DIRECTORY, 0o777 )
+        #os.chmod(IMAGES_DIRECTORY, stat.S_IWRITE)
+      
     self.load_yaml()
     self.counter = 0  # used for numbering the saved images.
     number_of_cameras = len(self.topic_list)

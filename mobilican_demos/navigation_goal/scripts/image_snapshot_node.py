@@ -17,13 +17,16 @@ from navigation_goal.srv import *
 # roslaunch mobilican trx.launch gazebo:=true cams:=true world:="/home/hila/catkin_ws/src/mobilican/mobilican_gazebo/worlds/simplified_market.world"
 # rosrun rqt_image_view rqt_image_view
 # rosrun rqt_robot_steering rqt_robot_steering
+
 # rosrun navigation_goal image_snapshot_node.py
 # rosservice call /image_snapshot_server  # call the server from the command line
 
-TOPICS_CONFIG_NAME = 'cameras_topics_armadillo2.yaml'
+TOPICS_CONFIG_NAME = 'cameras_topics_trx.yaml'
+#TOPICS_CONFIG_NAME = 'cameras_topics_armadillo2.yaml'
 TOPICS_CONFIG_PATH = os.path.join(os.path.dirname(sys.argv[0]), '../config/' + TOPICS_CONFIG_NAME)
-IMAGES_DIRECTORY = os.path.join(os.path.dirname(sys.argv[0]), '../images/')
-IMAGE_FORMAT = '.png'
+IMAGES_DIRECTORY = os.path.join(os.path.dirname(sys.argv[0]), '../images/')  #/var/traxdata/queue
+#IMAGES_DIRECTORY = os.path.join(os.path.dirname(sys.argv[0]), '../images/')
+IMAGE_FORMAT = '.jpg'
 
 class image_snapshot_node:
   # A node that uses CvBridge to convert ROS images (sensor_msgs/Image) into OpenCV cv::Mat format.

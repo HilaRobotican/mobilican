@@ -2,6 +2,11 @@
 
 //usage:
 // roslaunch mobilican mobilican.launch robot:=armadillo2 gazebo:=true lidar:=true move_base:=true amcl:=true world:="/home/hila/catkin_ws/src/mobilican/mobilican_gazebo/worlds/rooms.world" have_map:=true map:="/home/hila/catkin_ws/src/mobilican/mobilican_navigation/maps/rooms.yaml" rgb_cam:=true
+
+// roslaunch mobilican mobilican.launch robot:=trx gazebo:=true lidar:=true move_base:=true 
+//amcl:=true world:="/home/hila/catkin_ws/src/mobilican/mobilican_gazebo/worlds/rooms.world" have_map:=true 
+//map:="/home/hila/catkin_ws/src/mobilican/mobilican_navigation/maps/rooms.yaml" cams:=true
+
 // rviz
 // roslaunch navigation_goal navigation_goal.launch location_name:=___
 

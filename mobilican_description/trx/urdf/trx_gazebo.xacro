@@ -16,11 +16,11 @@
     <xacro:property name="URF_FOV" value="${10.0*M_PI/180}" />
     
     <xacro:arg name="controllers" default="true"/>
-    <xacro:arg name="urf" default="false"/>
-    <xacro:arg name="imu" default="false"/>
-    <xacro:arg name="lidar" default="false"/>
+    <xacro:arg name="urf" default="true"/>
+    <xacro:arg name="imu" default="true"/>
+    <xacro:arg name="lidar" default="true"/>
     <xacro:arg name="depth_cam" default="false"/>
-    <xacro:arg name="cams" default="false"/>
+    <xacro:arg name="cams" default="true"/>
         
     <xacro:if value="$(arg depth_cam)">
         
@@ -98,6 +98,7 @@
     <xacro:if value="$(arg imu)">
         <xacro:imu link="base_link" hz="50" topic="imu" />
     </xacro:if>
+
 
     <!-- controller manager and hardware interfaces -->
     <xacro:if value="$(arg controllers)">

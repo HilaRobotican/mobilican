@@ -83,7 +83,7 @@
     
     <gazebo>
         <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
-            <robotSimType>gazebo_ros_control/ArmadilloRobotHWSim</robotSimType> 
+            <robotSimType>gazebo_ros_control/DefaultRobotHWSim</robotSimType> 
         </plugin>
     </gazebo>
     
@@ -246,7 +246,7 @@
     <transmission name="rotation1_joint_trans">
         <type>transmission_interface/SimpleTransmission</type>
         <joint name="rotation1_joint">
-            <hardwareInterface>PosVelJointInterface</hardwareInterface>
+            <hardwareInterface>PositionJointInterface</hardwareInterface>
         </joint>
         <actuator name="rotation1_joint_motor">
             <mechanicalReduction>1</mechanicalReduction>
@@ -256,7 +256,7 @@
     <transmission name="shoulder1_joint_trans">
         <type>transmission_interface/SimpleTransmission</type>
         <joint name="shoulder1_joint">
-            <hardwareInterface>PosVelJointInterface</hardwareInterface>
+            <hardwareInterface>PositionJointInterface</hardwareInterface>
         </joint>
         <actuator name="shoulder1_joint_motor">
             <mechanicalReduction>1</mechanicalReduction>
@@ -266,7 +266,7 @@
     <transmission name="shoulder2_joint_trans">
         <type>transmission_interface/SimpleTransmission</type>
         <joint name="shoulder2_joint">
-            <hardwareInterface>PosVelJointInterface</hardwareInterface>
+            <hardwareInterface>PositionJointInterface</hardwareInterface>
         </joint>
         <actuator name="shoulder2_joint_motor">
             <mechanicalReduction>1</mechanicalReduction>
@@ -276,7 +276,7 @@
     <transmission name="rotation2_joint_trans">
         <type>transmission_interface/SimpleTransmission</type>
         <joint name="rotation2_joint">
-            <hardwareInterface>PosVelJointInterface</hardwareInterface>
+            <hardwareInterface>PositionJointInterface</hardwareInterface>
         </joint>
         <actuator name="rotation2_joint_motor">
             <mechanicalReduction>1</mechanicalReduction>
@@ -286,7 +286,7 @@
     <transmission name="shoulder3_joint_trans">
         <type>transmission_interface/SimpleTransmission</type>
         <joint name="shoulder3_joint">
-            <hardwareInterface>PosVelJointInterface</hardwareInterface>
+            <hardwareInterface>PositionJointInterface</hardwareInterface>
         </joint>
         <actuator name="shoulder3_joint_motor">
             <mechanicalReduction>1</mechanicalReduction>
@@ -296,7 +296,7 @@
     <transmission name="wrist_joint_trans">
         <type>transmission_interface/SimpleTransmission</type>
         <joint name="wrist_joint">
-            <hardwareInterface>PosVelJointInterface</hardwareInterface>
+            <hardwareInterface>PositionJointInterface</hardwareInterface>
         </joint>
         <actuator name="wrist_joint_motor">
             <mechanicalReduction>1</mechanicalReduction>
@@ -306,7 +306,7 @@
     <transmission name="left_finger_joint_trans">
         <type>transmission_interface/SimpleTransmission</type>
         <joint name="left_finger_joint">
-            <hardwareInterface>PosVelJointInterface</hardwareInterface>
+            <hardwareInterface>PositionJointInterface</hardwareInterface>
         </joint>
         <actuator name="left_finger_joint_motor">
             <mechanicalReduction>1</mechanicalReduction>
@@ -316,7 +316,7 @@
     <transmission name="right_finger_joint_trans">
         <type>transmission_interface/SimpleTransmission</type>
         <joint name="right_finger_joint">
-            <hardwareInterface>PosVelJointInterface</hardwareInterface>
+            <hardwareInterface>PositionJointInterface</hardwareInterface>
         </joint>
         <actuator name="right_finger_joint_motor">
             <mechanicalReduction>1</mechanicalReduction>

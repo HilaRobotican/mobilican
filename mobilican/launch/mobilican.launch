@@ -28,6 +28,8 @@
     <include file="$(find mobilican_control)/$(arg robot)/launch/$(arg robot)_controllers.launch" />
 
     <include file="$(find espeak_ros)/launch/espeak_ros.launch" />
+    
+    <include file="$(find mobilican_utils)/launch/pointcloud2laserscan.launch" />
 
     <group unless="$(arg hector_slam)">
         <group unless="$(arg hector_slam)">
@@ -68,6 +70,9 @@
             <arg name="initial_pose_y" value="$(arg pose_y)"/>
             <arg name="initial_pose_a" value="$(arg pose_a)"/>
         </include>
+       <!--<include file="$(find mobilican_control)/$(arg robot)/launch/$(arg robot)_controllers.launch">
+            <param name="mobile_base_controller/enable_odom_tf" value="true" />
+        </include>-->
     </group>
 
     <group if="$(arg move_base)">
@@ -85,6 +90,7 @@
         <include file="$(find gazebo_ros)/launch/empty_world.launch">
             <arg name="world_name" value="$(arg world)"/>
             <arg name="gui" value="true"/>
+<!--             <arg name="verbose" value="true"/> -->
         </include>
         <node name="$(arg robot)_spawn" pkg="gazebo_ros" type="spawn_model" output="screen" args="-urdf 
         -param robot_description 

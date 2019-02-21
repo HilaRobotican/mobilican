@@ -40,8 +40,10 @@ private:
   // The node handle is constructed and passed into the action server during construction of the action.
   // The feedback and result messages are created for publishing in the action.
   ros::NodeHandle *nh_;
-  actionlib::SimpleActionServer<navigation_goal::MoveAction> * action_server_;
+  //   actionlib::SimpleActionServer<navigation_goal::MoveAction> * action_server_; // TODO
 
+
+    
   MoveBaseClient * move_base_client_;
 
   ros::ServiceClient image_snapshot_client_;
@@ -67,6 +69,10 @@ private:
   int index_counter_; // counts the elements in the yaml file.
   move_base_msgs::MoveBaseGoal goal_; // goal to move base
 
+  std::string location_name_; // the name of the desired location
+
+  void fetchLocationsParams();
+  
   void initActionServer();
 
   /* Initialize the move_base client. */
@@ -101,7 +107,7 @@ private:
 
   void odomCallback(const nav_msgs::Odometry::ConstPtr& msg);
 
-  void executeAllGoals(const navigation_goal::MoveGoalConstPtr &goal);
+  void executeAllGoals();
 
 };
 #endif // NAVIGATION_GOAL_MOVE_ACTION_SERVER_H

@@ -6,9 +6,7 @@
 
     <node name="image_snapshot_node.py" pkg="navigation_goal" type="image_snapshot_node.py" respawn="false" output="screen"/>
 
-    <node name="move_server_node" pkg="navigation_goal" type="move_server_node" respawn="false" output="screen"/>
-
-    <node name="move_client_node" pkg="navigation_goal" type="move_client_node" respawn="false" output="screen">
+    <node name="move_server_node" pkg="navigation_goal" type="move_server_node" respawn="false" output="screen">
         <param name="location_param" type="string" value="$(arg location_name)"/>
     </node>
 

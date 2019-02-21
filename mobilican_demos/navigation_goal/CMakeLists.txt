@@ -66,17 +66,17 @@ target_link_libraries(
 
 add_dependencies(move_server_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
-add_executable(move_client_node
-		src/move_client_node.cpp
-		src/move_action_client.cpp
-		include/move_action_client.h)
-
-target_link_libraries(
-	move_client_node
-	${catkin_LIBRARIES}
-)
-
-add_dependencies(move_client_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+# add_executable(move_client_node
+# 		src/move_client_node.cpp
+# 		src/move_action_client.cpp
+# 		include/move_action_client.h)
+# 
+# target_link_libraries(
+# 	move_client_node
+# 	${catkin_LIBRARIES}
+# )
+# 
+# add_dependencies(move_client_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
         
 

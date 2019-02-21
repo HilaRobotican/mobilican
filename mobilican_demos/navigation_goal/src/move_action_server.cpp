@@ -10,17 +10,21 @@
 // rviz
 // roslaunch navigation_goal navigation_goal.launch location_name:=___
 
+//roslaunch mobilican mobilican.launch robot:=trx gazebo:=true move_base:=true amcl:=true 
+// world:="/home/hila/catkin_ws/src/mobilican/mobilican_gazebo/worlds/empty_market_asiles.world" have_map:=true 
+// map:="/home/hila/catkin_ws/src/mobilican/mobilican_navigation/maps/super.yaml" 
+
 #define WAITING_TIME_BETWEEN_GOALS 5
 
 void MoveActionServer::initActionServer()
 {
-    action_server_ = new actionlib::SimpleActionServer<navigation_goal::MoveAction>(*nh_, action_name_,
-                        boost::bind(&MoveActionServer::executeCB, this, _1), false);
-    action_server_->start();
+//     action_server_ = new actionlib::SimpleActionServer<navigation_goal::MoveAction>(*nh_, action_name_,
+//                         boost::bind(&MoveActionServer::executeCB, this, _1), false);
+//     action_server_->start();
 
-    // load the locations yaml file
-    fetchParams();
-    loadLocations();
+//     // load the locations yaml file
+//     fetchLocationsParams();
+//     loadLocations();
 }
 
 /* Initialize the move_base client.
@@ -47,18 +51,44 @@ void MoveActionServer::initOdomSubscriber()
     cur_angular_vel_ = 0.0;
 }
 
+
+void MoveActionServer::fetchParams()
+{
+    //TODO - not working!
+  nh_->getParam("location_param", location_name_);
+  ROS_INFO_STREAM("got param: " << location_name_);
+  location_name_ = "all"; // TODO - TO BE REMOVED
+}
+
+
 /* Construct an action server. */
 MoveActionServer::MoveActionServer(ros::NodeHandle *nh, std::string name) : //action_server_(nh_, name, boost::bind(&MoveActionServer::executeCB, this, _1), false),
-                                       nh_(nh), action_name_(name), index_counter_(0)
+                                       nh_(nh),
+//                                        action_name_(name), 
+                                       index_counter_(0)
 {
-    initActionServer();
+//     initActionServer();
+    // load the locations yaml file
+    fetchLocationsParams();
+    loadLocations();
+    fetchParams(); // fetch goal param
+
+    
     initMoveBaseClient();
     initOdomSubscriber();
     image_snapshot_client_ = nh_->serviceClient<navigation_goal::ImageSnapshot>("/image_snapshot_server");
+    
+    if (location_name_ == "all")
+    {
+        ROS_INFO("====================Start nevigate: ");
+        executeAllGoals();
+    }
+    ROS_INFO("====================Finished");
+
 }
 
 MoveActionServer::~MoveActionServer(){
-  delete action_server_;
+//   delete action_server_;
   delete move_base_client_;
 }
 
@@ -76,7 +106,7 @@ bool MoveActionServer::validateYamlType(XmlRpc::XmlRpcValue::Type actual_type, X
   return actual_type == wanted_type;
 }
 
-void MoveActionServer::fetchParams()
+void MoveActionServer::fetchLocationsParams()
 {
   // TODO - TO CHECK THE PRINTING OF ERRORS IN THIS FUNCTION.
   /* LOCATIONS_CONFIG_PARAM */
@@ -163,14 +193,16 @@ void MoveActionServer::callImageSnapshot()
         }
 }
 
-void MoveActionServer::executeAllGoals(const navigation_goal::MoveGoalConstPtr &goal)
+void MoveActionServer::executeAllGoals()
+// void MoveActionServer::executeAllGoals(const navigation_goal::MoveGoalConstPtr &goal)
 {
-    feedback_.name = "execute all";
-    action_server_->publishFeedback(feedback_); // publish the feedback
+//     feedback_.name = "execute all";
+//     action_server_->publishFeedback(feedback_); // publish the feedback
 
-    result_.res = goal->location_name;
-    ROS_INFO("%s: Succeeded: The goals sent", action_name_.c_str());
-    action_server_->setSucceeded(result_);
+//     result_.res = location_name_;
+    ROS_INFO("Succeeded: The goals sent");
+//     ROS_INFO("%s: Succeeded: The goals sent", action_name_.c_str());
+//     action_server_->setSucceeded(result_);
 
     std::vector<point>::iterator it;
     for (it = points_vec_.begin(); it != points_vec_.end(); ++it) {
@@ -199,59 +231,59 @@ void MoveActionServer::executeAllGoals(const navigation_goal::MoveGoalConstPtr &
     }
 }
 
-/*
- * The callback function. Called when the client send a goal.
- */
-void MoveActionServer::executeCB(const navigation_goal::MoveGoalConstPtr &goal)
-{
-  ros::Rate r(10);
-  bool success = true;
-
-  // Publish info to the console for the user
-  std::cout << "Executing, the location name is: " << goal->location_name << std::endl;
-
-  if (action_server_->isPreemptRequested() || !ros::ok())
-  {
-    ROS_INFO("%s: Preempted", action_name_.c_str());
-    action_server_->setPreempted();
-    success = false;
-  }
-
-  if (success)
-  {
-      if (goal->location_name == "all")
-      {
-          executeAllGoals(goal);
-      }
-      else
-          {
-          // todo - repetition of code with executeAllGoals?
-          bool location_name_found = locations_map_.find(goal->location_name) != locations_map_.end();
-          if (!location_name_found) // Check if the client's goal exists. If not, exit.
-          {
-              ROS_ERROR("[MoveActionServer]: couldn't locate model specification for location name %s. "
-                        "Make sure locations.yaml contains all the necessary locations. shutting down...",
-                        goal->location_name.c_str());
-              ros::shutdown();
-              exit(EXIT_FAILURE);
-          }
-          int cur_index = locations_map_[goal->location_name];
-          cur_point_ = points_vec_.at((unsigned) cur_index);
-          ROS_INFO("x: %f, y: %f, :y %f ", cur_point_.x, cur_point_.y, cur_point_.Y);
-
-          feedback_.name = "found";
-          action_server_->publishFeedback(feedback_); // publish the feedback
-
-          result_.res = goal->location_name;
-          ROS_INFO("%s: Succeeded", action_name_.c_str());
-          action_server_->setSucceeded(result_);
-
-          // send the goal to move base.
-          publishGoal();
-          //TODO
-      }
-  }
-}
+// /*
+//  * The callback function. Called when the client send a goal.
+//  */
+// void MoveActionServer::executeCB(const navigation_goal::MoveGoalConstPtr &goal)
+// {
+//   ros::Rate r(10);
+//   bool success = true;
+// 
+//   // Publish info to the console for the user
+//   std::cout << "Executing, the location name is: " << goal->location_name << std::endl;
+// 
+//   if (action_server_->isPreemptRequested() || !ros::ok())
+//   {
+//     ROS_INFO("%s: Preempted", action_name_.c_str());
+//     action_server_->setPreempted();
+//     success = false;
+//   }
+// 
+//   if (success)
+//   {
+//       if (goal->location_name == "all")
+//       {
+//           executeAllGoals(goal);
+//       }
+//       else
+//           {
+//           // todo - repetition of code with executeAllGoals?
+//           bool location_name_found = locations_map_.find(goal->location_name) != locations_map_.end();
+//           if (!location_name_found) // Check if the client's goal exists. If not, exit.
+//           {
+//               ROS_ERROR("[MoveActionServer]: couldn't locate model specification for location name %s. "
+//                         "Make sure locations.yaml contains all the necessary locations. shutting down...",
+//                         goal->location_name.c_str());
+//               ros::shutdown();
+//               exit(EXIT_FAILURE);
+//           }
+//           int cur_index = locations_map_[goal->location_name];
+//           cur_point_ = points_vec_.at((unsigned) cur_index);
+//           ROS_INFO("x: %f, y: %f, :y %f ", cur_point_.x, cur_point_.y, cur_point_.Y);
+// 
+//           feedback_.name = "found";
+//           action_server_->publishFeedback(feedback_); // publish the feedback
+// 
+//           result_.res = goal->location_name;
+//           ROS_INFO("%s: Succeeded", action_name_.c_str());
+//           action_server_->setSucceeded(result_);
+// 
+//           // send the goal to move base.
+//           publishGoal();
+//           //TODO
+//       }
+//   }
+// }
 
 
 void MoveActionServer::createGoalToMoveBase()

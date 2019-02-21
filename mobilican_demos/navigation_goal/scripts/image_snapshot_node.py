@@ -25,7 +25,6 @@ TOPICS_CONFIG_NAME = 'cameras_topics_trx.yaml'
 TOPICS_CONFIG_PATH = os.path.join(os.path.dirname(sys.argv[0]), '../config/' + TOPICS_CONFIG_NAME)
 HOME_DIRECTORY = os.environ['HOME']
 IMAGES_DIRECTORY = os.path.join(HOME_DIRECTORY,"queue/")
-#IMAGES_DIRECTORY = os.path.join(os.path.dirname(sys.argv[0]), '../images/')
 IMAGE_FORMAT = '.jpg'
 
 class image_snapshot_node:
@@ -34,12 +33,9 @@ class image_snapshot_node:
   # and holds the current frame from each camera. Upon a client request, it saves the images into files.
 
   def __init__(self):
-    #subprocess.call(["chmod", "a-w", IMAGES_DIRECTORY])
-    #print("Home dir detected: ".format(HOME_DIRECTORY))
-    #print("Creating IMAGES_DIRECTORY in: ".format(IMAGES_DIRECTORY))
+    # Create a folder for the saved images.
     if not os.path.exists(IMAGES_DIRECTORY):
         os.mkdir(IMAGES_DIRECTORY, 0o777 )
-        #os.chmod(IMAGES_DIRECTORY, stat.S_IWRITE)
       
     self.load_yaml()
     self.counter = 0  # used for numbering the saved images.

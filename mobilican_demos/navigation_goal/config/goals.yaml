@@ -1,0 +1,16 @@
+locations: [
+{
+    location_name: first,
+    x1: -5.19,
+    y1: 13.0,
+    x2: -5.13,
+    y2: -13.2
+},
+{
+    location_name: second,
+    x1: -0.462,
+    y1: -12.5,
+    x2: -0.203,
+    y2: 18.6,
+}
+]

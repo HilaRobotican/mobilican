@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+
+<launch>
+    <node name="vision_node" pkg="ros_interface" type="vision_node" respawn="false" output="screen"/>
+
+</launch>

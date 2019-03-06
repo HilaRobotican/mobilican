@@ -16,17 +16,22 @@ void Ros1Implementation::newPublisher(std::string pub_name)
         ROS_INFO("publisher to 'chatter' is ready to publish.");
 }
 
+// template<>
+// // void Ros1Implementation::subCallback(const std_msgs::String::ConstPtr& msg) //TODO should not be here!
+// void Ros1Implementation::subCallback<std_msgs::String>(const std_msgs::String::ConstPtr& msg) //TODO should not be here!
+// {
+//     ROS_INFO("I heard: [%s]", msg->data.c_str());
+// }
 
-void Ros1Implementation::subCallback(const std_msgs::String::ConstPtr& msg) //TODO should not be here!
-{
-    ROS_INFO("I heard: [%s]", msg->data.c_str());
-}
+// template<typename ROSMessageType>
+// void Ros1Implementation::newSubscriber(std::string topic_name, CallbackFunc (*f)(int), int msg_index)
 
-void Ros1Implementation::newSubscriber(std::string topic_name)
+void Ros1Implementation::newSubscriber(std::string topic_name, TopicCallback& tc)
 {
-        // TODO to send the fanction as parameter.
-        ros::Subscriber sub = nh_->subscribe(topic_name, 1000, &Ros1Implementation::subCallback, this);
-        // ros::Subscriber sub = nh_->subscribe(topic_name, 1000, &Vision::subCallback, this);
+        // TODO to send the function as parameter.
+
+        // ros::Subscriber sub = nh_->subscribe(topic_name, 1000, &TopicCallback::subCallback, tc);
+        ros::Subscriber sub = nh_->subscribe(topic_name, 1000, tc.get(0), &tc);  // &tc - passinig a pointer to object to operate on
 
         subscribers_vec_.push_back(sub);
         ROS_INFO("subscriber is ready.");

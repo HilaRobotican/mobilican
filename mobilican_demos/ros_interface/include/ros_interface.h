@@ -5,6 +5,7 @@
 #include <string>
 #include "std_msgs/String.h"
 #include <sstream>
+#include "topic_callback.h"
 
 /*
  * Represents an
@@ -16,7 +17,7 @@ public:
   virtual ~RosInterface() = 0;
 
   virtual void newPublisher(std::string topic_name) = 0;
-  virtual void newSubscriber(std::string topic_name) = 0;
+  virtual void newSubscriber(std::string topic_name, TopicCallback& tc) = 0;
   virtual void publishToTopic(std::string topic_name) = 0;
 
 private:
@@ -30,6 +31,6 @@ private:
 
 };
 
-inline RosInterface::~RosInterface() { } // prevent multiple definitions
+inline RosInterface::~RosInterface() { } // prevent multiple definition
 
 #endif // ROS_INTERFACE_ROS_INTERFACE_H

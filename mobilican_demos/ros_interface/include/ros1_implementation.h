@@ -4,6 +4,7 @@
 #include <ros/ros.h>
 // #include <string>
 #include "ros_interface.h"
+
 // #include <sstream>
 
 /*
@@ -16,9 +17,15 @@ public:
   virtual ~Ros1Implementation(void);
 
   virtual void newPublisher(std::string topic_name);
-  virtual void newSubscriber(std::string topic_name);
+
+  // template<typename ROSMessageType>
+  virtual void newSubscriber(std::string topic_name, TopicCallback& tc);
+
   virtual void publishToTopic(std::string topic_name);
-  void subCallback(const std_msgs::String::ConstPtr& msg);  //TODO should not be here!
+
+  // template<typename ROSMessageType>
+  // void subCallback(const typename ROSMessageType::ConstPtr& msg); //TODO should not be here!
+  // // void subCallback(const std_msgs::String::ConstPtr& msg);  //TODO should not be here!
 
 private:
   ros::NodeHandle *nh_;
